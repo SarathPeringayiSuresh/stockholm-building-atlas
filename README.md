@@ -2,16 +2,20 @@
 
 [Open the live walking planner](https://sarathperingayisuresh.github.io/stockholm-building-atlas/) · [Deployment status](https://github.com/SarathPeringayiSuresh/stockholm-building-atlas/actions/workflows/pages.yml)
 
-A focused walking-route planner for Stockholm. Pick architecture, parks and nature, waterfront views, or a mix; choose a walking-time target, 2–8 stops, and a starting point. Get a trail along real mapped paths and open its ordered stops in Google Maps.
+A focused walking-route planner for Stockholm. Pick architecture, parks and nature, waterfront views, or a mix; choose a walking-time target, 2–8 stops, and an automatically suggested starting area. Get a trail along real mapped paths and open its ordered stops in Google Maps.
 
 ## Plan a walk
 
 1. Choose architecture and history, parks and nature, water and viewpoints, or a mix.
 2. Set a target of 30–180 minutes and 2–8 stops.
-3. Choose one of seven starting points and whether to return to the start.
+3. Use the starting area automatically selected for your mood, and choose whether to return to the start.
 4. Create your walk, review the mapped trail and stops, then open it in Google Maps.
 
 The bundled snapshot includes **73 outdoor stops**: 23 atlas building landmarks and 50 parks, gardens or viewpoints, connected through 75,094 mapped path points. Data was retrieved on 20 October 2026. Coverage is central Stockholm; the app does not claim to route through every building in the original atlas.
+
+The start is selected automatically: **Gamla stan** for architecture and mixed walks, **Djurgårdsbron** for nature, and **Slussen** for waterfront walks. The suggestion explains the area and updates immediately when the mood changes. These are curated starting recommendations; the route may extend into neighbouring areas to match the requested duration and stop count.
+
+The map restores the original atlas’s **3D buildings and Ärg period colours**, with dark water and a highlighted walking trail. Drag to pan, scroll/pinch to zoom, and right-drag or use the rotate button to turn the view. The old period filters and quest controls remain absent.
 
 ## Run locally
 
@@ -46,7 +50,7 @@ If deployment fails, inspect the failed step in **Actions**. A Pages configurati
 
 ## How it works
 
-- Vanilla HTML/CSS/JavaScript and Leaflet, with the route search in a module worker.
+- Vanilla HTML/CSS/JavaScript and Three.js. Building meshes and route search run in separate module workers. The 3D map uses the original atlas footprint/height data and age palette.
 - Bundled OpenStreetMap graph: Dijkstra shortest paths plus a beam search for stop order, duration and reduced retracing.
 - Landmark names and recorded years retained from the previous Hus för hus building atlas.
 - OSM parks, gardens and viewpoints add outdoor stops.
@@ -61,8 +65,9 @@ See [walking data, methods and limits](WALK-DATA-SOURCES.md) and [the original a
 - `scripts/build_atlas.py`: builds the walking planner into `dist` (name retained for deployment compatibility).
 - `scripts/build_walk_data.py`: creates the route graph and outdoor stop catalogue from OSM extracts.
 - `scripts/fetch_walk_data.py`: downloads bounded OSM extracts for a data refresh.
-- `web/`, `pipeline/`, `UPSTREAM-README.md`: original atlas source retained for provenance, not shipped by the new build.
+- `web/`: original atlas source and data; the build copies only renderer primitives and required building/land/water geometry into `dist/atlas/`. Its old interface and feature controls are not shipped.
+- `pipeline/`, `UPSTREAM-README.md`: original atlas pipeline and documentation retained for provenance.
 
 ## Credits and licences
 
-Original atlas: Hus för hus, Amir Elion; renderer adapted from Alex Barakov's work. Preserve the included MIT licence. OSM-derived data is © OpenStreetMap contributors under ODbL 1.0, separately from the code. Leaflet is BSD-2-Clause. Dataset terms and snapshot details are in the data documentation.
+Original atlas: Hus för hus, Amir Elion; renderer adapted from Alex Barakov's work. Preserve the included MIT licence. OSM-derived data is © OpenStreetMap contributors under ODbL 1.0, separately from the code. Three.js is MIT licensed. The unused Leaflet source retained in the repository is BSD-2-Clause. Dataset terms and snapshot details are in the data documentation.
