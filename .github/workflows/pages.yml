@@ -1,4 +1,4 @@
-name: Deploy GitHub Pages
+name: Deploy Stockholm walking planner
 
 on:
   push:
@@ -7,31 +7,55 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
-  deploy:
+  build:
+    name: Test and build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      # The planner and its tests use bundled data and standard libraries.
+      # No npm install, routing API key, or live data download is needed.
+      - name: Test walking routes and Google Maps exports
+        run: node --test walk/test/*.test.mjs
+
+      - name: Build walking planner
+        run: python3 scripts/build_atlas.py
+
+      - name: Upload static site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    name: Publish to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v6
-
       - uses: actions/configure-pages@v5
 
-      - name: Build atlas
-        run: python3 scripts/build_atlas.py
-
-      - uses: actions/upload-pages-artifact@v4
-        with:
-          path: dist
-
-      - name: Deploy
+      - name: Deploy walking planner
         id: deployment
         uses: actions/deploy-pages@v4
