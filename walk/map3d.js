@@ -18,7 +18,7 @@ export class AtlasMap {
   try{this.renderer=new THREE.WebGLRenderer({canvas:this.canvas,antialias:true});}catch(e){this.fail('The 3D map needs WebGL. Your walk and Google Maps links still work.');return;}
   this.renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));this.renderer.setClearColor(theme.sky);
   this.scene=new THREE.Scene();this.camera=new THREE.PerspectiveCamera(35,1,2,40000);this.controls=new MapControls(this.camera,this.canvas);
-  this.controls.enableDamping=true;this.controls.maxPolarAngle=Math.PI*.46;this.controls.minDistance=150;this.controls.maxDistance=18000;this.controls.screenSpacePanning=false;
+  this.controls.enableDamping=true;this.setInteraction(!matchMedia('(max-width: 720px)').matches);this.controls.maxPolarAngle=Math.PI*.46;this.controls.minDistance=150;this.controls.maxDistance=18000;this.controls.screenSpacePanning=false;
   this.controls.mouseButtons={LEFT:THREE.MOUSE.PAN,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.ROTATE};this.controls.touches={ONE:THREE.TOUCH.PAN,TWO:THREE.TOUCH.DOLLY_ROTATE};
   this.controls.listenToKeyEvents(this.canvas);this.controls.addEventListener('change',()=>{this.dirty=true;});
   this.scene.add(new THREE.HemisphereLight(0xffffff,0x75838d,2));const sun=new THREE.DirectionalLight(0xffffff,2);sun.position.set(-1500,2500,1000);this.scene.add(sun);
@@ -29,6 +29,7 @@ export class AtlasMap {
   this.animate=()=>{if(this.disposed)return;this.frame=requestAnimationFrame(this.animate);this.controls.update();if(this.dirty){this.renderer.render(this.scene,this.camera);this.projectLabels();this.dirty=false;}};this.animate();
   this.ready=this.load().catch(e=>this.fail('Some 3D map data could not load. Reload to try again.'));
  }
+ setInteraction(enabled){if(!this.controls)return;this.controls.enabled=enabled;this.canvas.style.touchAction=enabled?'none':'pan-y';this.canvas.setAttribute('aria-label',enabled?'Interactive 3D Stockholm map. Drag to pan, pinch to zoom. Use Back to walk controls to leave the map.':'3D Stockholm map preview. Swipe to scroll the page, or choose Explore map to interact.');}
  fail(message){this.status.hidden=false;this.status.textContent=message;this.status.classList.add('error');this.onError?.(message);}
  resize(){if(!this.renderer)return;const w=this.el.clientWidth,h=this.el.clientHeight;this.renderer.setSize(w,h,false);this.camera.aspect=w/Math.max(h,1);this.camera.updateProjectionMatrix();this.dirty=true;}
  async load(){

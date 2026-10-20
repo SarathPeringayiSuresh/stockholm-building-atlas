@@ -1,13 +1,14 @@
 import {STARTS} from './planner.js';
 import {recommend} from './recommendations.js';
 import {AtlasMap} from './map3d.js';
+import {initMobileMapNavigation} from './mobile-navigation.js';
 const $=s=>document.querySelector(s),form=$('#planner-form'),status=$('#form-status'),generate=$('#generate');
 const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let map,currentRoute,requestId=0,seed=0,ready=false;
 const titles={mixed:'A little bit of Stockholm',architecture:'Stories written in stone',nature:'A little room to breathe',waterfront:'Where the city meets water'};
 function setStatus(text,error=false){status.textContent=text;status.classList.toggle('error',error);}
 function setBusy(busy){form.classList.toggle('loading',busy);for(const el of form.querySelectorAll('input,select,button'))el.disabled=busy;$('#minus').disabled=busy||Number($('#stops').value)===2;$('#plus').disabled=busy||Number($('#stops').value)===8;generate.disabled=busy||!ready;generate.firstElementChild.textContent=busy?'Finding your scenic way…':currentRoute?'Create another walk':'Create my walk';}
-function mapInset(){return $('#route-card').hidden?0:Math.min($('#route-card').offsetHeight+65,$('#map').clientHeight*.63);}
+function mapInset(){return $('#route-card').hidden?0:Math.min($('#route-card').offsetHeight+(innerWidth<=720?135:65),$('#map').clientHeight*.63);}
 function fit(){map?.fit(mapInset());}
 function initMap(){map=new AtlasMap($('#map'),message=>{console.warn(message);});}
 function showPois(){/* Buildings provide the map context; numbered stops appear with the route. */}
@@ -32,7 +33,7 @@ function markChanged(){if(currentRoute)setStatus('Settings changed. Create a new
 form.addEventListener('change',e=>{if(e.target.name==='mood')updateSuggestion();markChanged();});$('#fit').onclick=fit;$('#zoom-in').onclick=()=>map?.zoom(.8);$('#zoom-out').onclick=()=>map?.zoom(1.25);$('#rotate-map').onclick=()=>map?.rotate();
 $('#close-route').onclick=()=>{$('#route-card').hidden=true;fit();setStatus('Your route is still on the map. Create another walk to change it.');};
 $('#about-open').onclick=()=>$('#about').showModal();$('#about-close').onclick=()=>$('#about').close();$('#about').addEventListener('click',e=>{if(e.target===$('#about')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close();}});
-initMap();updateSuggestion();
+initMap();updateSuggestion();initMobileMapNavigation(map);
 let worker;
 try{worker=new Worker(new URL('./worker.js',import.meta.url),{type:'module'});worker.postMessage({type:'init'});}catch(e){setStatus('The route planner could not start. Please use a current browser and reload.',true);}
 if(worker){worker.onmessage=({data})=>{if(data.type==='ready'){ready=true;setBusy(false);showPois(data.places);$('#data-detail').textContent=`${data.places.length} outdoor stops · ${data.meta.nodes.toLocaleString()} mapped path points · OpenStreetMap snapshot ${data.meta.date}. Central Stockholm coverage.`;setStatus('No account needed. Just a pair of comfortable shoes.');}else if(data.type==='route'&&data.id===requestId){showRoute(data.route);setBusy(false);}else if(data.type==='error'&&(data.id===undefined||data.id===requestId)){setBusy(false);setStatus(data.message,true);}};worker.onerror=()=>{ready=false;setBusy(false);setStatus('The route planner could not load. Reload the page to try again.',true);};}

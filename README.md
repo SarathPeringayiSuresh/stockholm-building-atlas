@@ -17,6 +17,8 @@ The start is selected automatically: **Gamla stan** for architecture and mixed w
 
 The map restores the original atlas’s **3D buildings and Ärg period colours**, with dark water and a highlighted walking trail. Drag to pan, scroll/pinch to zoom, and right-drag or use the rotate button to turn the view. The old period filters and quest controls remain absent.
 
+On mobile, swipe over the map to scroll the dashboard. Tap **Explore map** to enable map gestures, then **Done exploring** to resume scrolling. The floating **Walk controls** button returns to your selections even when the route card is closed.
+
 ## Run locally
 
 Requirements: Python 3 for the static build/server; Node.js 20+ for tests. GitHub Actions uses Python 3.12 and Node.js 24. No API key or npm installation is required.
