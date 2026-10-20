@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#153d35"><meta name="description" content="Find your own way through Stockholm. Personal walking routes through architecture, green spaces and waterfronts.">
+<title>Stockholm, on foot — Make a little room for wandering</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="vendor/leaflet.css"><link rel="stylesheet" href="style.css">
+<script defer src="vendor/leaflet.js"></script><script type="module" src="app.js"></script>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="./" aria-label="Stockholm on foot home"><span class="brandmark">s<span>↗</span></span><span>stockholm<span class="brand-sub">on foot</span></span></a><span class="header-note">A different way to see the city.</span><button class="quiet" id="about-open">About the walks <span>↗</span></button></header>
+<main>
+<section class="planner" aria-label="Plan your walk">
+<div class="intro"><p class="eyebrow"><span class="tiny-dot"></span> YOUR CITY. YOUR PACE.</p><h1>Take the<br>scenic way.</h1><p class="intro-copy">Old facades. Quiet parks. A little more water.<br>Build a Stockholm walk that feels like you.</p></div>
+<form id="planner-form">
+<fieldset><legend><span class="step">01</span> What are you in the mood for?</legend><div class="moods">
+<label class="mood"><input type="radio" name="mood" value="mixed" checked><span class="mood-icon">✳</span><span><b>A bit of everything</b><small>The best of both worlds</small></span><span class="radio-dot"></span></label>
+<label class="mood"><input type="radio" name="mood" value="architecture"><span class="mood-icon">▥</span><span><b>Architecture & history</b><small>Buildings with a story</small></span><span class="radio-dot"></span></label>
+<label class="mood"><input type="radio" name="mood" value="nature"><span class="mood-icon">♧</span><span><b>Parks & nature</b><small>A greener kind of city break</small></span><span class="radio-dot"></span></label>
+<label class="mood"><input type="radio" name="mood" value="waterfront"><span class="mood-icon">≈</span><span><b>Water & viewpoints</b><small>Big views, fresh air</small></span><span class="radio-dot"></span></label>
+</div></fieldset>
+<fieldset class="time-field"><legend><span class="step">02</span> How long would you like to walk?</legend><div class="time-heading"><output for="duration" id="duration-output">60 <span>min</span></output><span class="subtle">Walking time · breaks extra</span></div><input id="duration" type="range" min="30" max="180" step="15" value="60" aria-label="Walking duration in minutes"><div class="range-labels"><span>30 min</span><span>3 hours</span></div></fieldset>
+<fieldset><legend><span class="step">03</span> How many places along the way?</legend><div class="stop-row"><span class="subtle">A reason to pause</span><div class="stepper"><button type="button" id="minus" aria-label="Fewer stops">−</button><output id="stops-output" aria-live="polite">4</output><button type="button" id="plus" aria-label="More stops">+</button></div></div><input type="hidden" name="stops" id="stops" value="4"></fieldset>
+<div class="start-row"><label for="start">Start exploring from</label><select id="start"><option value="gamla">Gamla stan</option><option value="central">Central station</option><option value="djurgarden">Djurgårdsbron</option><option value="slussen">Slussen</option><option value="ostermalm">Östermalmstorg</option><option value="kungsholmen">Rådhuset</option><option value="odenplan">Odenplan</option></select></div>
+<label class="loop-toggle"><input id="loop" type="checkbox" checked><span class="switch"></span><span>Bring me back to the start</span><span class="loop-icon">↺</span></label>
+<button id="generate" class="primary" type="submit" disabled><span>Loading walking paths…</span><span>↗</span></button><p id="form-status" class="form-status" role="status">Preparing Stockholm’s walking network.</p>
+</form>
+<footer class="panel-footer">MADE FOR WANDERING, NOT RUSHING <span>59°19′N 18°04′E</span></footer>
+</section>
+<section class="map-panel" aria-label="Walking route map and itinerary">
+<div id="map" role="region" aria-label="Interactive map of Stockholm"></div><div class="map-top"><span class="location-pill"><span class="tiny-dot"></span> STOCKHOLM, SWEDEN</span><button class="map-fit" id="fit" aria-label="Fit map to route" title="Fit route">⤢</button></div>
+<div class="map-caption" id="map-caption"><span class="eyebrow">ONE CITY. A THOUSAND LITTLE DETOURS.</span><h2>Your next favourite<br>corner is out there.</h2><p>Pick your mood. We’ll connect the dots.</p><div class="mini-legend"><span><i class="legend-dot green"></i> Green spaces</span><span><i class="legend-dot gold"></i> Architecture</span><span><i class="legend-dot blue"></i> Views & water</span></div></div>
+<section class="route-card" id="route-card" hidden aria-label="Your walking itinerary"><div class="route-header"><div><p class="eyebrow">YOUR WALK, READY TO GO</p><h2 id="route-title">A little Stockholm escape</h2></div><button id="close-route" class="quiet" aria-label="Close itinerary">×</button></div><div class="metrics"><div><b id="route-distance"></b><span>kilometres</span></div><div><b id="route-time"></b><span>minutes walking</span></div><div><b id="route-stops"></b><span>places to pause</span></div><div><b id="route-shape">↺</b><span id="route-shape-label">round trip</span></div></div><p id="route-note" class="route-note"></p><div class="itinerary-scroll"><ol id="itinerary"></ol></div><div id="maps-links" class="maps-links"></div><p class="maps-note">Google Maps keeps your stop order but may choose different paths. Longer walks open in parts to keep every stop on mobile.</p></section>
+<div class="map-bottom-note" id="map-bottom-note">FOLLOW YOUR CURIOSITY <span>↗</span></div>
+</section>
+</main>
+<dialog id="about"><button id="about-close" class="dialog-close" aria-label="Close about">×</button><p class="eyebrow">A WALK WITH A LITTLE MORE TO IT</p><h2>Stockholm, on foot.</h2><p>Choose a mood, a walking-time target and 2–8 stops. We connect outdoor places using a snapshot of Stockholm’s public streets and footpaths. Round trips return to your starting point.</p><h3>Where the places come from</h3><p>Building landmarks and recorded years come from the existing <a href="https://husforhus.se" target="_blank" rel="noopener">Hus för hus atlas</a>. Parks, gardens and viewpoints come from <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>. Nature categories are informed by <a href="https://www.visitstockholm.com/stockholms-districts/djurgarden/" target="_blank" rel="noopener">Visit Stockholm</a>. Each stop links to its source.</p><h3>Before you head out</h3><p>Time is estimated at 4.5 km/h and excludes breaks and visits inside buildings. Stops are outdoor viewing points or park approaches. Routes may include stairs and unpaved paths. This is not an accessibility planner; live closures, opening hours and weather are not included.</p><p id="data-detail"></p><p><a href="DATA-SOURCES.md" target="_blank">Data, methods & credits ↗</a></p></dialog>
+</body></html>

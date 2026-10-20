@@ -1,13 +1,14 @@
 {
-  "name": "stockholm-through-time",
+  "name": "stockholm-on-foot",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "python3 scripts/build_atlas.py",
     "start": "python3 -m http.server 8642 --bind 127.0.0.1 --directory dist",
-    "test": "node --test web/test/*.test.mjs",
-    "test:web": "node --test web/test/*.test.mjs"
+    "test": "node --test walk/test/*.test.mjs",
+    "test:web": "node --test walk/test/*.test.mjs",
+    "test:atlas": "node --test web/test/*.test.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.11.0",
